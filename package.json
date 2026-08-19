@@ -1,0 +1,11 @@
+{
+	"name": "zunoy-cms-toolkit",
+	"version": "0.1.0",
+	"description": "General-purpose scripts for the Zunoy CMS admin API — content types, entries, pages, media, backups, and audits.",
+	"private": true,
+	"type": "commonjs",
+	"engines": {
+		"node": ">=18"
+	},
+	"license": "UNLICENSED"
+}
