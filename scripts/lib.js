@@ -51,12 +51,13 @@ function withParams(path, params = {}) {
 // retries: number of additional attempts after the first failure (0 = no retry).
 // Only retries network errors and 5xx responses — 4xx is treated as a real
 // failure (retrying a bad request just wastes time and re-triggers the same error).
-async function adminRequest(path, { method = 'GET', body, retries = 0, branch } = {}) {
+async function adminRequest(path, { method = 'GET', body, retries = 0, branch, baseUrl } = {}) {
 	const { BASE_URL } = requireEnv();
+	const requestBaseUrl = (baseUrl || BASE_URL).replace(/\/$/, '');
 	const fullPath = branch ? withParams(path, { branch }) : path;
 	let lastErr;
 	for (let attempt = 0; attempt <= retries; attempt++) {
-		const res = await fetch(`${BASE_URL}${fullPath}`, {
+		const res = await fetch(`${requestBaseUrl}${fullPath}`, {
 			method,
 			headers: adminHeaders(),
 			body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -75,17 +76,22 @@ async function adminRequest(path, { method = 'GET', body, retries = 0, branch } 
 	throw lastErr;
 }
 
-async function publicRequest(path, { branch, filter } = {}) {
+async function publicRequest(path, { branch, filter, method = 'GET', body, baseUrl } = {}) {
 	const { BASE_URL } = requireEnv();
+	const requestBaseUrl = (baseUrl || BASE_URL).replace(/\/$/, '');
 	const params = { branch };
 	if (filter) for (const [k, v] of Object.entries(filter)) params[`filter[${k}]`] = v;
 	const fullPath = withParams(path, params);
-	const res = await fetch(`${BASE_URL}${fullPath}`, { headers: publicHeaders() });
+	const res = await fetch(`${requestBaseUrl}${fullPath}`, {
+		method,
+		headers: publicHeaders(),
+		body: body === undefined ? undefined : JSON.stringify(body),
+	});
 	const text = await res.text();
 	let json;
 	try { json = text ? JSON.parse(text) : undefined; } catch { json = text; }
 	if (!res.ok) {
-		const err = new Error(`GET ${fullPath} -> ${res.status}: ${typeof json === 'string' ? json : JSON.stringify(json)}`);
+		const err = new Error(`${method} ${fullPath} -> ${res.status}: ${typeof json === 'string' ? json : JSON.stringify(json)}`);
 		err.status = res.status;
 		err.body = json;
 		throw err;

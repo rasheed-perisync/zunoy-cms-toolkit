@@ -14,3 +14,4 @@ const { adminRequest } = require('../lib');
 	const pages = Array.isArray(result) ? result : result?.data || [];
 	console.log(JSON.stringify(pages, null, 2));
 })().catch((e) => { console.error(e.message); process.exit(1); });
+

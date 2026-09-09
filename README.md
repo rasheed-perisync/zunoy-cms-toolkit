@@ -67,6 +67,7 @@ support quirks, the `reference` field type, page fields): [`docs/admin-api.md`](
 | `resolve-references.js` | `<entry-id>` — recursively resolves `reference`-typed field ids into their actual entries |
 | `get-singleton.js` | `<typeApiId> [--admin]` — fetch the one entry of a singleton-style type (header/footer/global/etc.) |
 | `update-singleton.js` | `<typeApiId> <patch.json> [--replace]` — safe merge-patch the one entry of a singleton-style type |
+| `fix-alt-keys.js` | `[--slug=homepage] [--all] [--entry=<id>] [--apply]` — renames `<fieldName>Alt` keys to `<fieldName>_alt` recursively, dry-run by default |
 
 ### `scripts/pages/`
 | Script | Usage |
@@ -82,6 +83,30 @@ support quirks, the `reference` field type, page fields): [`docs/admin-api.md`](
 | `publish-all.js` | `[slug] [--dry]` — bulk publish every draft page (or one slug) + sections |
 | `reorder-sections.js` | `<ids.json> [--start=0]` — set `sectionOrder` on a list of entries to match the order you list them in |
 | `unlink-section.js` | `<entry-id> [entry-id ...]` — detach a section from its page (clears `page`) without deleting the entry |
+
+### `scripts/forms/`
+| Script | Usage |
+|---|---|
+| `list.js` | no args — list CMS Forms API forms |
+| `get.js` | `<form-id-or-slug>` — read one form from the authenticated collection |
+| `create.js` | `<form.json>` — create a form from `{ "name", "slug", "description"? }` |
+| `update.js` | `<form-id-or-slug> <patch.json>` — safely update `name`, `slug`, and/or `description` |
+| `delete.js` | `<form-id-or-slug>` — permanently delete a form |
+
+#### `scripts/forms/submissions/`
+| Script | Usage |
+|---|---|
+| `list.js` | `<form-id-or-slug>` — read-only list of submissions for one form |
+| `create.js` | `<form-id-or-slug> <submission.json> [branch]` — submit JSON through the public Forms API |
+
+The Forms API defaults to `https://api.zunoy.com/api/v1/cms`; override it with
+`CMS_FORMS_BASE_URL` when needed. Form tags are intentionally unsupported here
+until their taxonomy API is available.
+
+### `scripts/branches/`
+| Script | Usage |
+|---|---|
+| `get.js` | `[branch-id-or-slug]` — read-only list or lookup of CMS branches |
 
 ### `scripts/media/`
 | Script | Usage |
