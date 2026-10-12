@@ -99,6 +99,41 @@ async function publicRequest(path, { branch, filter, method = 'GET', body, baseU
 	return json;
 }
 
+// new Blob([buffer]) with no `type` sends the multipart file part with no Content-Type,
+// which most CMS backends then store/serve as application/octet-stream regardless of
+// the real file format -- browsers can fail to render an <img src>/<audio>/<video>
+// pointing at such a URL. Every upload script infers the real type from the extension
+// with this.
+const MIME_TYPES = {
+	'.svg': 'image/svg+xml',
+	'.png': 'image/png',
+	'.jpg': 'image/jpeg',
+	'.jpeg': 'image/jpeg',
+	'.webp': 'image/webp',
+	'.gif': 'image/gif',
+	'.avif': 'image/avif',
+	'.heic': 'image/heic',
+	'.tif': 'image/tiff',
+	'.tiff': 'image/tiff',
+	'.ico': 'image/x-icon',
+	'.mp3': 'audio/mpeg',
+	'.m4a': 'audio/mp4',
+	'.wav': 'audio/wav',
+	'.ogg': 'audio/ogg',
+	'.mp4': 'video/mp4',
+	'.webm': 'video/webm',
+	'.mov': 'video/quicktime',
+	'.pdf': 'application/pdf',
+	'.json': 'application/json',
+	'.txt': 'text/plain',
+	'.csv': 'text/csv',
+};
+
+function mimeTypeFor(filePath) {
+	const ext = require('path').extname(filePath).toLowerCase();
+	return MIME_TYPES[ext] || 'application/octet-stream';
+}
+
 // The admin entries-list endpoint mixes every branch together with no
 // server-side filter (confirmed) — filter the result yourself with this.
 // Entries with no branchId are treated as the default "main" branch.
@@ -131,4 +166,5 @@ module.exports = {
 	findContentType,
 	readJsonArg,
 	filterEntriesByBranch,
+	mimeTypeFor,
 };

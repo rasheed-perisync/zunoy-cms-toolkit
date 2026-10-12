@@ -12,21 +12,12 @@
 //         "previewImage") using the existing safe get->merge->PUT pattern.
 const fs = require('fs');
 const path = require('path');
-const { requireEnv, adminHeaders, adminRequest, findContentType } = require('../lib');
-
-const MIME_TYPES = {
-	'.svg': 'image/svg+xml',
-	'.png': 'image/png',
-	'.jpg': 'image/jpeg',
-	'.jpeg': 'image/jpeg',
-	'.webp': 'image/webp',
-	'.gif': 'image/gif',
-};
+const { requireEnv, adminHeaders, adminRequest, findContentType, mimeTypeFor } = require('../lib');
 
 async function uploadFile(filePath, folderId) {
 	const { BASE_URL, API_KEY } = requireEnv();
 	const buffer = fs.readFileSync(filePath);
-	const mimeType = MIME_TYPES[path.extname(filePath).toLowerCase()] || 'application/octet-stream';
+	const mimeType = mimeTypeFor(filePath);
 	const form = new FormData();
 	form.append('file', new Blob([buffer], { type: mimeType }), path.basename(filePath));
 	if (folderId) form.append('folderId', folderId);

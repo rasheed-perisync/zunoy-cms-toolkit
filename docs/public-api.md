@@ -12,20 +12,16 @@ which you never want leaking onto a public page.
 |---|---|---|
 | GET | `/v1/:typeApiId` | List published entries of one type. `?filter[fieldName]=value` filters server-side (repeat the param per field). `?branch=` selects a branch |
 | GET | `/v1/:typeApiId/:entryId` | Single entry. Has been observed 404ing for some types even when the entry exists — fall back to listing + finding by id client-side if so (see `list-public.js`'s caller pattern in `utils/zunoy-cms.js`) |
-| GET | `/v1/_pages/:slug` | Single page by slug — **see the known bug below before using this** |
+| GET | `/v1/_pages/:slug` | Single page by slug, including multi-segment slugs (e.g. `uptime/pricing`) |
 
-## Known backend bug: `/v1/_pages/:slug` 404s on multi-segment slugs
+## Fixed: `/v1/_pages/:slug` used to 404 on multi-segment slugs
 
-Confirmed against a live instance: `/v1/_pages/appshare` (single segment)
-works, but `/v1/_pages/uptime/pricing` or `/v1/_pages/appshare/pricing`
-(multi-segment) 404 regardless of URL-encoding or branch param. This is a CMS
-backend bug, not something fixable from a client. The production workaround
-used in `utils/zunoy-cms.js`: **never call this route** — read pages through
-the admin surface instead (`GET /api/pages` + `GET /api/pages/:id/sections`),
-even for non-preview/public rendering, and filter out non-published
-pages/sections client-side yourself before rendering. If your slugs are all
-single-segment you may not hit this at all, but it's worth testing before you
-depend on `/v1/_pages/:slug` for anything with a `/` in the slug.
+Multi-segment slugs (`/v1/_pages/uptime/pricing`, `/v1/_pages/appshare/pricing`)
+used to 404 on this route because of a CMS backend bug. That is now fixed in
+the backend, so `/v1/_pages/:slug` works for any slug. Older consumers such as
+`utils/zunoy-cms.js` may still route around it by reading pages through the
+admin surface (`GET /api/pages` + `GET /api/pages/:id/sections`) and filtering
+out unpublished content client-side. That workaround is no longer needed.
 
 ## Filtering syntax
 

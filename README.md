@@ -32,7 +32,7 @@ them in a script or commit them anywhere.
   `entries/list-public.js`.
 
 Full endpoint reference, including things that only show up from reading
-real production usage (a known `/v1/_pages/:slug` backend bug, branch-param
+real production usage (the now-fixed `/v1/_pages/:slug` multi-segment bug, branch-param
 support quirks, the `reference` field type, page fields): [`docs/admin-api.md`](docs/admin-api.md),
 [`docs/public-api.md`](docs/public-api.md).
 

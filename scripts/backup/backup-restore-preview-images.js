@@ -23,7 +23,7 @@
 // field); this script uses the full array, which is the real capability.
 const fs = require('fs');
 const path = require('path');
-const { requireEnv, adminRequest } = require('../lib');
+const { requireEnv, adminRequest, mimeTypeFor } = require('../lib');
 
 async function runBackup(outDir) {
 	const models = await adminRequest('/api/content-types');
@@ -67,7 +67,7 @@ async function uploadMedia(filePath) {
 	const { BASE_URL, API_KEY } = requireEnv();
 	const buffer = fs.readFileSync(filePath);
 	const form = new FormData();
-	form.append('file', new Blob([buffer]), path.basename(filePath));
+	form.append('file', new Blob([buffer], { type: mimeTypeFor(filePath) }), path.basename(filePath));
 	const res = await fetch(`${BASE_URL}/api/media/upload`, {
 		method: 'POST',
 		headers: { 'X-API-Key': API_KEY },
