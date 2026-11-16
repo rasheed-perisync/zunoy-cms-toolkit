@@ -133,6 +133,17 @@ until their taxonomy API is available.
 | `wipe-collection.js` | `<pages\|entries> [contentType] [--yes]` — destructive bulk delete, dry-run without `--yes` |
 | `rehost-broken-assets.js` | `--old-host= --fallback-host= [--page=] [--component=] [--limit=] [--apply]` — find asset URLs pointing at a dead host anywhere in entry data, re-upload from a fallback host, rewrite. Dry-run by default |
 
+### `scripts/logs/`
+| Script | Usage |
+|---|---|
+| `audit.js` | `[--action=] [--resource=] [--search=] [--id=] [--type=] [--actor=] [--since=] [--limit=] [--pages=] [--full] [--json]` — read the audit log (`GET /api/audit-logs`, same feed as the web app's Logs → Audit tab): who created/updated/published what, and when. An entry `update` whose `status=draft` means the edit was saved but never published, a common reason for "I changed it but it's not showing" |
+
+### `scripts/revalidate/`
+| Script | Usage |
+|---|---|
+| `status.js` | `[branch]` — is the website behind the CMS? (`GET /api/publish-status` → `dirty`, `lastPublishedAt`) |
+| `revalidate.js` | `[branch]` — full site revalidation, same as the web app's "Publish to website" button (`POST /api/revalidate-all`). Prints publish status before/after and the site's HTTP response from the audit log. Publishing an entry doesn't refresh an ISR site on its own: publish, then revalidate |
+
 ### `references/`
 
 Not general-purpose CLI tools — read and adapt before running, don't treat as
